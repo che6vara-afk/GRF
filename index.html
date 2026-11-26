@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GOODS RECEIPT FORM</title>
+<meta name="theme-color" content="#0f7a4f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Goods Receipt">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js" defer></script>
+<style>
+:root{
+  --bg:#f3f6f4;--card:#ffffff;--tx:#13201b;--mu:#5c6d65;--bd:#dce4e0;
+  --ac:#0f7a4f;--ac2:#159460;--act:#ffffff;--dg:#c62828;--warn:#b45309;
+  --chip:#e8f1ec;--soft:#eef5f1;--sh:0 4px 18px rgba(15,40,28,.06);
+  --navbg:rgba(255,255,255,.88);color-scheme:light
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0e1411;--card:#17201c;--tx:#e8f0ec;--mu:#94a79e;--bd:#283630;
+    --ac:#2bb67d;--ac2:#39cb8f;--act:#05170f;--dg:#ff8a80;--warn:#fbbf24;
+    --chip:#223029;--soft:#1c2923;--sh:0 6px 22px rgba(0,0,0,.35);
+    --navbg:rgba(23,32,28,.88);color-scheme:dark
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;background:var(--bg);color:var(--tx);
+  font:15px/1.45 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-variant-numeric:tabular-nums;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased
+}
+header{
+  position:sticky;top:0;z-index:30;
+  background:linear-gradient(135deg,#0c6642 0%,#148c5b 100%);
+  color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+  box-shadow:0 4px 16px rgba(12,102,66,.22)
+}
+.hdr-in{max-width:580px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.logo-box{
+  width:42px;height:42px;border-radius:11px;background:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  padding:4px;box-shadow:0 2px 8px rgba(0,0,0,.14);overflow:hidden
+}
+.logo-box img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.hdr-tx{min-width:0;flex:1}
+.hdr-tx b{display:block;font-size:16px;font-weight:800;letter-spacing:.3px;line-height:1.2}
+.hdr-tx div{font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+main{max-width:580px;margin:0 auto;padding:14px 12px}
+section{animation:fadeUp .22s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hide{display:none!important}
+
+.card{
+  background:var(--card);border:1px solid var(--bd);border-radius:16px;
+  padding:15px;margin-bottom:12px;box-shadow:var(--sh)
+}
+.card.q{border-color:var(--ac);border-width:1.5px}
+.card.warn-box{border-color:var(--warn);background:var(--soft)}
+label{display:block;font-size:12.5px;font-weight:600;color:var(--mu);margin:11px 0 5px}
+input,select,textarea{
+  width:100%;font:inherit;padding:11px 12px;border:1px solid var(--bd);
+  border-radius:11px;background:var(--bg);color:var(--tx);
+  transition:border-color .16s,box-shadow .16s
+}
+textarea{resize:vertical;min-height:70px}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(15,122,79,.16)
+}
+input.big{font-size:28px;font-weight:800;text-align:right;padding:12px 14px;letter-spacing:-.5px}
+input[readonly]{opacity:.85}
+
+.row{display:flex;gap:10px;align-items:flex-start}.row>*{flex:1;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.chip{
+  border:1px solid var(--bd);background:var(--chip);color:var(--tx);
+  border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .15s
+}
+.chip:active{transform:scale(.96)}
+.chip.on{background:var(--ac);color:var(--act);border-color:var(--ac);font-weight:600}
+.chips.sm .chip{padding:5px 10px;font-size:12.5px}
+
+button{cursor:pointer;transition:transform .12s,opacity .15s,background .15s}
+button:active:not(:disabled){transform:scale(.98)}
+button.pri{
+  width:100%;padding:14px 16px;border:0;border-radius:12px;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--act);
+  font:inherit;font-size:15.5px;font-weight:700;margin-top:14px;
+  box-shadow:0 4px 12px rgba(15,122,79,.22)
+}
+button.pri:disabled{opacity:.5;cursor:not-allowed}
+button.sm{padding:10px 13px;font-size:14px}
+button.sec,a.sec{
+  padding:10px 13px;border:1px solid var(--bd);border-radius:11px;
+  background:var(--card);color:var(--tx);font:inherit;font-size:14px;font-weight:600;
+  text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px
+}
+button.dg{color:var(--dg);border-color:rgba(198,40,40,.28)}
+
+.stat{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.stat b{font-size:21px;font-weight:800;color:var(--ac)}
+.it{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--bd)}
+.it:first-child{border-top:0;padding-top:2px}
+.it small{color:var(--mu);display:block;font-size:12.5px;margin-top:2px}
+.w{font-weight:700;white-space:nowrap;font-size:15px}
+.bad{color:var(--dg)!important;font-size:12.5px;font-weight:500}
+
+.sc{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{background:var(--soft);color:var(--mu);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+td,th{padding:8px 9px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+
+.badge{
+  display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;
+  font-size:11.5px;font-weight:700;background:var(--chip);color:var(--mu)
+}
+.badge.ok{background:rgba(15,122,79,.14);color:var(--ac)}
+.badge.part{background:rgba(180,83,9,.14);color:var(--warn)}
+
+.car-card{cursor:pointer;transition:transform .15s,border-color .15s}
+.car-card:hover{border-color:var(--ac)}
+.car-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.car-meta{font-size:12.5px;color:var(--mu);margin-top:4px}
+.car-sum{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px dashed var(--bd);font-size:13.5px}
+
+.sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:460px){.sig-grid{grid-template-columns:1fr}}
+.sig-box{border:1px solid var(--bd);border-radius:12px;padding:11px;background:var(--bg)}
+.sig-box b{display:block;font-size:13px;margin-bottom:6px}
+.sig-prev{
+  height:88px;border:1px dashed var(--bd);border-radius:9px;background:#fff;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;margin:8px 0
+}
+.sig-prev img{max-height:82px;max-width:96%;object-fit:contain}
+.sig-prev span{color:#8a9a92;font-size:12px}
+
+.modal-bg{
+  position:fixed;inset:0;z-index:60;background:rgba(8,18,13,.56);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:14px
+}
+.modal{
+  width:100%;max-width:460px;background:var(--card);border:1px solid var(--bd);
+  border-radius:18px;padding:16px;box-shadow:0 18px 44px rgba(0,0,0,.32);
+  animation:popIn .18s ease-out
+}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.pad-wrap{
+  border:1.5px dashed var(--bd);border-radius:12px;background:#fff;
+  overflow:hidden;margin:10px 0;touch-action:none
+}
+#sigCanvas{width:100%;height:200px;display:block;cursor:crosshair}
+
+nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:40;
+  display:flex;justify-content:space-around;
+  background:var(--navbg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--bd);
+  padding:6px 6px calc(6px + env(safe-area-inset-bottom))
+}
+nav button{
+  flex:1;max-width:130px;padding:6px 4px;border:0;background:none;
+  color:var(--mu);font:inherit;font-size:11.5px;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:10px
+}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--ac)}
+nav button.on svg{stroke-width:2.3}
+
+.toast{
+  position:fixed;left:50%;bottom:92px;z-index:80;transform:translateX(-50%) translateY(8px);
+  background:#13201b;color:#fff;padding:10px 16px;border-radius:11px;
+  font-size:13.5px;font-weight:500;opacity:0;transition:.2s;pointer-events:none;
+  max-width:90%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.28)
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Area cetak khusus Goods Receipt Form */
+#printArea{display:none}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;font-size:11.5px}
+  header,main,nav,.toast,.modal-bg{display:none!important}
+  #printArea{display:block!important;color:#000!important}
+  .p-kop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .p-kop img{max-height:66px;max-width:170px;object-fit:contain}
+  .p-addr{text-align:left;font-size:11px;line-height:1.45;color:#000}
+  .p-addr b{font-size:12.5px;display:block;color:#000}
+  .p-title{text-align:center;margin:10px 0 12px;color:#000}
+  .p-title h2{margin:0;font-size:16px;letter-spacing:.6px;color:#000}
+  .p-title div{font-size:11px;margin-top:2px;color:#000}
+  .p-meta{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px;color:#000}
+  .p-meta td{border:0;padding:2px 6px 2px 0;white-space:normal;color:#000}
+  .p-tbl{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:11px}
+  .p-tbl th{background:#0f7a4f!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #0f7a4f;padding:6px 7px}
+  .p-tbl td{border:1px solid #cfd8d3;padding:5px 7px;color:#000}
+  .p-tbl tr.tot td{background:#e6efe9!important;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .p-sigs{display:flex;justify-content:space-between;gap:24px;margin-top:22px;page-break-inside:avoid}
+  .p-sig{flex:1;text-align:center;color:#000}
+  .p-sig-img{height:68px;display:flex;align-items:center;justify-content:center;margin:6px 0}
+  .p-sig-img img{max-height:64px;max-width:170px;object-fit:contain}
+  .p-line{border-top:1px solid #000;width:78%;margin:4px auto 3px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-in">
+    <div class="logo-box" id="hdrLogo"></div>
+    <div class="hdr-tx">
+      <b>GOODS RECEIPT FORM</b>
+      <div>OKA · Google Sheets · <span id="stt">Memuat…</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="apiWarn" class="card warn-box hide">
+    <b>API Google Apps Script belum diatur</b>
+    <div style="font-size:13px;color:var(--mu);margin-top:4px">
+      Buka file <code>index.html</code> dan isi variabel <code>API_URL</code> dengan URL Web App Google Apps Script Anda, atau tempel URL-nya sementara di tab <b>Master</b>.
+    </div>
+  </div>
+
+  <!-- TAB 1: INPUT -->
+  <section id="v-in">
+    <div id="qBox"></div>
+    <div class="card stat">
+      <span>Tanggal <span id="sDate"></span></span>
+      <span><b id="sKg">0</b> kg · <span id="sN">0</span> jumbo</span>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div><label style="margin-top:0">Tanggal</label><input id="fD" type="date"></div>
+        <div><label style="margin-top:0">No. Jumbo Bag</label><input id="fJ" type="number" inputmode="numeric" min="1" placeholder="mis. 1"></div>
+      </div>
+      <label>Code Item</label><select id="fC"></select>
+      <label>Name Item</label><input id="fNm" readonly placeholder="otomatis dari Code">
+      <div class="row">
+        <div><label>No. Polisi</label><select id="fP"></select></div>
+        <div><label>Driver</label><select id="fDr"></select></div>
+      </div>
+      <div class="row">
+        <div style="flex:2">
+          <label>Armada Ke</label>
+          <input id="fA" type="number" inputmode="numeric" min="1" placeholder="mis. 1">
+          <div class="chips sm" id="cA"></div>
+        </div>
+        <div style="flex:3">
+          <label>Tujuan Gudang</label>
+          <input id="fGd" autocomplete="off" placeholder="ketik atau pilih gudang">
+          <div class="chips" id="cGd"></div>
+        </div>
+      </div>
+      <label>Net Weight (Kg)</label>
+      <input id="fN" class="big" type="number" inputmode="decimal" step="0.5" placeholder="0.0">
+      <label>Gross Weight (Kg) – opsional</label>
+      <input id="fG" type="number" inputmode="decimal" step="0.5" placeholder="boleh dikosongkan">
+      <label>Remark</label>
+      <input id="fR" autocomplete="off" placeholder="mis. A, B, B3, AW, 19">
+      <div class="chips" id="cRem"></div>
+      <label>PIC</label><select id="fPic"></select>
+      <button class="pri" id="bSave">Simpan Penimbangan</button>
+    </div>
+  </section>
+
+  <!-- TAB 2: REKAP -->
+  <section id="v-rk" class="hide">
+    <div class="card">
+      <label style="margin-top:0">Tanggal rekap</label>
+      <input id="rD" type="date">
+      <div class="chips" id="rCh" style="margin-top:10px"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="sec" id="bRef">Muat ulang</button>
+        <a class="sec" id="aSheet" href="#" target="_blank" rel="noopener">Buka Spreadsheet</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat"><span>Total Net</span><b id="rKg">0 kg</b></div>
+      <div class="sc"><table id="rT"></table></div>
+    </div>
+    <div class="card" id="rL"></div>
+  </section>
+
+  <!-- TAB 3: LAPORAN (COMPILE PER MOBIL + TTD + PDF) -->
+  <section id="v-lp" class="hide">
+    <div id="lpListWrap">
+      <div class="card">
+        <label style="margin-top:0">Tanggal Laporan per Mobil</label>
+        <input id="lD" type="date">
+        <div class="chips" id="lCh" style="margin-top:10px"></div>
+        <button class="sec" id="lRef" style="width:100%;margin-top:12px">Muat ulang laporan</button>
+      </div>
+      <div id="lpCards"></div>
+    </div>
+
+    <div id="lpDetail" class="hide">
+      <div class="card">
+        <button class="sec" id="lpBack" style="margin-bottom:10px">← Kembali ke Daftar Mobil</button>
+        <div class="car-top">
+          <div>
+            <b id="dTitle" style="font-size:17px"></b>
+            <div class="car-meta" id="dDoc"></div>
+            <div class="car-meta" id="dMeta"></div>
+          </div>
+          <span class="badge" id="dBadge"></span>
+        </div>
+        <div class="sc"><table id="dSumT"></table></div>
+        <div class="sc" style="margin-top:14px"><table id="dDetT"></table></div>
+        <label>Catatan Laporan (opsional)</label>
+        <textarea id="lpNote" placeholder="Catatan tambahan untuk berita acara / goods receipt..."></textarea>
+      </div>
+
+      <div class="card">
+        <b style="font-size:15px">Tanda Tangan Digital</b>
+        <div class="sig-grid">
+          <div class="sig-box">
+            <b>PIC OKA</b>
+            <input id="sOkaNm" placeholder="Nama PIC OKA">
+            <div class="sig-prev" id="pOka"><span>Belum ditandatangani</span></div>
+            <small id="tOka" style="color:var(--mu);display:block;font-size:11.5px;min-height:16px"></small>
+            <button class="sec" id="bSigOka" style="width:100%;margin-top:6px">Tanda Tangan</button>
+          </div>
+          <div class="sig-box">
+            <b>PIC Client</b>
+            <input id="sCliNm" placeholder="Nama PIC Client">
+            <input id="sCliCo" placeholder="Nama Perusahaan Client" style="margin-top:6px">
+            <div class="sig-prev" id="pCli"><span>Belum ditandatangani</span></div>
+            <small id="tCli" style="color:var(--mu);display:block;font-size:11.5px;min-height:16px"></small>
+            <button class="sec" id="bSigCli" style="width:100%;margin-top:6px">Tanda Tangan</button>
+          </div>
+        </div>
+        <button class="pri" id="bSaveLp">Simpan Tanda Tangan & Catatan</button>
+        <div class="row" style="margin-top:10px">
+          <button class="sec" id="bPdf">Export PDF</button>
+          <button class="sec" id="bPrint">Cetak / Print</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4: MASTER -->
+  <section id="v-ms" class="hide">
+    <div class="card">
+      <b>Logo & Kop Surat Perusahaan</b>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <div class="logo-box" id="msLogoPrev" style="width:58px;height:58px;border:1px solid var(--bd)"></div>
+        <div style="flex:1">
+          <input id="fLogoFile" type="file" accept="image/*" style="padding:8px;font-size:13px">
+          <div style="font-size:12px;color:var(--mu);margin-top:4px">Format PNG/JPG. Otomatis dikompresi agar tajam di PDF.</div>
+        </div>
+      </div>
+      <label>Nama Perusahaan</label>
+      <input id="pName" placeholder="PT. ORBIT KARUNIA ABADI">
+      <label>Alamat Kantor (boleh multi-baris)</label>
+      <textarea id="pAddr" placeholder="Jl. Cisalak Utara No. 09&#10;Margakaya Telukjambe Barat&#10;Karawang Barat 41361"></textarea>
+      <label>Website / Kontak</label>
+      <input id="pWeb" placeholder="www.orbitkaruniaabadi.com">
+      <button class="pri sm" id="bSaveProf">Simpan Logo & Kop Surat</button>
+    </div>
+
+    <div class="card">
+      <b>Koneksi Backend Google Apps Script</b>
+      <div style="font-size:12.5px;color:var(--mu);margin-top:4px">
+        Gunakan jika ingin mengganti URL Web App tanpa mengedit ulang <code>index.html</code>.
+      </div>
+      <label>URL Web App (<code>.../exec</code>)</label>
+      <input id="fApiUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      <button class="sec" id="bSaveApi" style="width:100%;margin-top:10px">Simpan URL & Muat Ulang</button>
+    </div>
+
+    <div id="msList"></div>
+    <div class="card" style="color:var(--mu);font-size:13.5px">
+      Semua daftar dropdown tersimpan di sheet “Master” pada Google Sheets dan tetap disinkronkan otomatis.
+    </div>
+  </section>
+</main>
+
+<!-- MODAL SIGNATURE PAD -->
+<div id="sigModal" class="modal-bg hide">
+  <div class="modal">
+    <div class="stat">
+      <b id="sigTitle" style="font-size:16px;color:var(--tx)">Tanda Tangan</b>
+      <button class="sec" id="sigClose" style="padding:5px 10px;font-size:13px">Tutup</button>
+    </div>
+    <div class="pad-wrap"><canvas id="sigCanvas"></canvas></div>
+    <div class="row">
+      <button class="sec dg" id="sigClear">Bersihkan</button>
+      <button class="pri sm" id="sigApply" style="margin-top:0">Pakai Tanda Tangan</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGASI BAWAH -->
+<nav>
+  <button data-v="in" class="on">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    <span>Input</span>
+  </button>
+  <button data-v="rk">
+    <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 6-6"/></svg>
+    <span>Rekap</span>
+  </button>
+  <button data-v="lp">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+    <span>Laporan</span>
+  </button>
+  <button data-v="ms">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>Master</span>
+  </button>
+</nav>
+
+<div class="toast" id="tt"></div>
+<div id="printArea"></div>
+
+<script>
+// =====================================================================
+// KONFIGURASI BACKEND GOOGLE APPS SCRIPT
+// Tempel URL Web App Apps Script Anda (berakhiran /exec) di bawah ini:
+// =====================================================================
+const DEFAULT_API_URL = "TEMPEL_URL_WEB_APP_APPS_SCRIPT_ANDA_DI_SINI";
+
+const $=id=>document.getElementById(id);
+const LS={
+  get:k=>{try{return localStorage.getItem(k)||""}catch(e){return ""}},
+  set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}
+};
+LS.ok=(()=>{try{localStorage.setItem("oka-t","1");return localStorage.getItem("oka-t")==="1"}catch(e){return false}})();
+
+function getApiUrl(){
+  const custom=LS.get("oka-api-url").trim();
+  if(custom)return custom;
+  return DEFAULT_API_URL;
+}
+function isApiReady(){
+  const u=getApiUrl();
+  return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(u);
+}
+
+const run=async(fn,...args)=>{
+  if(!isApiReady())throw new Error("URL Web App Google Apps Script belum diatur");
+  const res=await fetch(getApiUrl(),{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({fn,args}),
+    redirect:"follow"
+  });
+  if(!res.ok)throw new Error("HTTP "+res.status+" dari server");
+  const json=await res.json();
+  if(!json.ok)throw new Error(json.error||"Gagal memproses permintaan");
+  return json.data;
+};
+
+const errMsg=e=>(e&&e.message?e.message:String(e)).replace(/^Error:\s*/,"");
+const today=()=>{
+  const o={};
+  new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit"})
+    .formatToParts(new Date()).forEach(p=>{o[p.type]=p.value});
+  return o.year+"-"+o.month+"-"+o.day;
+};
+const nowWib=()=>{
+  const o={};
+  new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Jakarta",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})
+    .formatToParts(new Date()).forEach(p=>{o[p.type]=p.value});
+  return o.year+"-"+o.month+"-"+o.day+" "+o.hour+":"+o.minute+" WIB";
+};
+const fmt=n=>Number(n||0).toLocaleString("id-ID",{maximumFractionDigits:1});
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let tmr=null;
+function toast(m){
+  const t=$("tt");t.textContent=m;t.classList.add("show");
+  clearTimeout(tmr);tmr=setTimeout(()=>t.classList.remove("show"),2600);
+}
+
+const DEFAULT_PROFILE={
+  name:"PT. ORBIT KARUNIA ABADI",
+  address:"Jl. Cisalak Utara No. 09\nMargakaya Telukjambe Barat\nKarawang Barat 41361",
+  contact:"www.orbitkaruniaabadi.com",
+  logo:""
+};
+const DEFAULT_LOGO_SVG=`<svg viewBox="0 0 64 64" width="32" height="32" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="14" fill="#0f7a4f"/><text x="32" y="40" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="22" fill="#ffffff">OKA</text></svg>`;
+
+let Q=[];try{Q=JSON.parse(LS.get("oka-q")||"[]")||[]}catch(e){Q=[]}
+const saveQ=()=>LS.set("oka-q",JSON.stringify(Q));
+const PERM=/^(No\. Jumbo|Net Weight|No\. Polisi|Driver|Name|PIC|Gross|Armada|Tujuan)/;
+const KINDS=[
+  ["plate","No. Polisi","B 1234 XXX"],
+  ["driver","Driver","Nama driver"],
+  ["pic","PIC","Nama PIC"],
+  ["armada","Armada Ke","mis. 11"],
+  ["gudang","Tujuan Gudang","Nama gudang"],
+  ["remark","Remark","A / B3 / 19"]
+];
+
+let M={plates:[],drivers:[],items:[],armadas:[],gudangs:[],rems:[],pics:[],url:"#",profile:Object.assign({},DEFAULT_PROFILE)};
+let today_=[],ALL=[],COMPILES={},curCar=null;
+
+function getProf(){
+  return Object.assign({},DEFAULT_PROFILE,M.profile||{});
+}
+function renderLogo(){
+  const p=getProf();
+  const html=p.logo?`<img src="${p.logo}" alt="Logo">`:DEFAULT_LOGO_SVG;
+  $("hdrLogo").innerHTML=html;
+  $("msLogoPrev").innerHTML=html;
+  $("pName").value=p.name||"";
+  $("pAddr").value=p.address||"";
+  $("pWeb").value=p.contact||"";
+}
+
+function fillSel(id,list,ph){
+  const s=$(id),c=s.value;s.innerHTML="";s.add(new Option(ph,""));
+  (list||[]).forEach(v=>s.add(new Option(v,v)));
+  if((list||[]).indexOf(c)>=0)s.value=c;
+}
+function chips(el,list,cur,fn){
+  el.innerHTML="";
+  (list||[]).forEach(v=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="chip"+(v===cur?" on":"");
+    b.textContent=v;b.onclick=()=>fn(v);el.appendChild(b);
+  });
+}
+function drawChips(){
+  chips($("cRem"),M.rems,$("fR").value.trim(),v=>{$("fR").value=v;drawChips()});
+  chips($("cA"),M.armadas,$("fA").value.trim(),v=>{$("fA").value=v;drawChips()});
+  chips($("cGd"),M.gudangs,$("fGd").value.trim(),v=>{$("fGd").value=v;drawChips()});
+}
+function fillCodes(){
+  const s=$("fC"),c=s.value;s.innerHTML="";s.add(new Option("— pilih —",""));
+  (M.items||[]).forEach(it=>s.add(new Option(it.c,it.c)));
+  if((M.items||[]).some(it=>it.c===c))s.value=c;
+}
+function setName(){
+  const it=(M.items||[]).find(x=>x.c===$("fC").value);
+  $("fNm").value=it?it.n:"";
+}
+
+let mBusy=false,dateTouched=false;
+function applyToday(t){
+  if(dateTouched||!t||$("fD").value===t)return;
+  const old=$("fD").value;
+  $("fD").value=t;
+  if($("rD").value===old)$("rD").value=t;
+  if($("lD").value===old)$("lD").value=t;
+  loadDay();
+}
+
+async function refreshMaster(manual){
+  if(mBusy||!isApiReady())return;
+  if(!navigator.onLine){if(manual)toast("Offline: memakai daftar tersimpan");return}
+  if(!manual&&!$("v-ms").classList.contains("hide"))return;
+  mBusy=true;
+  try{
+    const m=await run("getMaster");
+    M=Object.assign({profile:DEFAULT_PROFILE},m);
+    LS.set("oka-master",JSON.stringify(M));
+    applyToday(m.today);
+    drawAll();
+    if(manual)toast(m.itemsError?"Daftar item bermasalah, lihat tab Master":"Daftar diperbarui");
+  }catch(e){if(manual)toast(errMsg(e))}
+  mBusy=false;
+}
+
+function drawItemCard(box){
+  const d=document.createElement("div");d.className="card";
+  d.innerHTML="<b>Name / Code Item</b> <span style='color:var(--mu);font-size:12.5px'>("+(M.items||[]).length+")</span><div style='margin-top:8px'><input class='ic' placeholder='Code, mis. BF 073'><input class='inm' placeholder='Name (nama item)' style='margin-top:8px'><div class='row' style='margin-top:8px'><button class='pri sm ia' style='margin-top:0'>Simpan</button><button class='sec ir'>Muat ulang</button></div><div style='color:var(--mu);font-size:12.5px;margin-top:8px'>Code yang sudah ada: nama akan diperbarui.</div></div>"+(M.itemsError?"<div class='bad' style='margin-top:8px'>"+esc(M.itemsError)+"</div>":"");
+  const ic=d.querySelector(".ic"),inm=d.querySelector(".inm"),ia=d.querySelector(".ia");
+  ia.onclick=async()=>{
+    const c=ic.value.trim();if(!c){toast("Isi Code dulu");return}
+    ia.disabled=true;
+    try{
+      M=await run("addItem",c,inm.value.trim());
+      LS.set("oka-master",JSON.stringify(M));
+      ic.value=inm.value="";drawAll();toast("Item disimpan");
+    }catch(e){toast(errMsg(e))}
+    ia.disabled=false;
+  };
+  d.querySelector(".ir").onclick=()=>refreshMaster(true);
+  box.appendChild(d);
+}
+
+function drawMaster(){
+  const box=$("msList");box.innerHTML="";
+  KINDS.forEach(k=>{
+    const d=document.createElement("div");d.className="card";
+    const list={plate:M.plates,driver:M.drivers,pic:M.pics,armada:M.armadas,gudang:M.gudangs,remark:M.rems}[k[0]]||[];
+    d.innerHTML="<b>"+esc(k[1])+"</b> <span style='color:var(--mu);font-size:12.5px'>("+list.length+")</span><div class='row' style='margin-top:8px'><input placeholder='"+esc(k[2])+"' style='flex:3'><button class='pri sm' style='flex:1;margin-top:0'>Tambah</button></div>";
+    const inp=d.querySelector("input"),bt=d.querySelector("button");
+    bt.onclick=async()=>{
+      const v=inp.value.trim();if(!v){toast("Isi dulu");return}
+      bt.disabled=true;
+      try{
+        M=await run("addMaster",k[0],v);
+        LS.set("oka-master",JSON.stringify(M));
+        inp.value="";drawAll();toast(k[1]+" ditambah");
+      }catch(e){toast(errMsg(e))}
+      bt.disabled=false;
+    };
+    box.appendChild(d);
+  });
+  drawItemCard(box);
+}
+
+function drawAll(){
+  renderLogo();
+  fillCodes();
+  fillSel("fP",M.plates,"— pilih No. Polisi —");
+  fillSel("fDr",M.drivers,"— pilih Driver —");
+  fillSel("fPic",M.pics,"— pilih PIC —");
+  const sv=LS.get("oka-code");
+  if(!$("fC").value&&(M.items||[]).some(x=>x.c===sv))$("fC").value=sv;
+  setName();
+  if(!$("fP").value)$("fP").value=LS.get("oka-plate");
+  if(!$("fDr").value)$("fDr").value=LS.get("oka-driver");
+  if(!$("fPic").value)$("fPic").value=LS.get("oka-pic");
+  if(!$("fA").value)$("fA").value=LS.get("oka-armada");
+  if(!$("fGd").value)$("fGd").value=LS.get("oka-gudang");
+  drawChips();
+  drawMaster();
+  $("aSheet").href=M.url||"#";
+  $("apiWarn").classList.toggle("hide",isApiReady());
+  $("fApiUrl").value=LS.get("oka-api-url")||(isApiReady()?DEFAULT_API_URL:"");
+}
+
+function allToday(){return today_.concat(Q.filter(q=>q.date===$("fD").value))}
+function stats(){
+  const r=allToday();
+  $("sDate").textContent=$("fD").value;
+  $("sKg").textContent=fmt(r.reduce((a,x)=>a+x.net,0));
+  $("sN").textContent=r.length;
+}
+function suggestJ(){$("fJ").value=allToday().reduce((a,x)=>Math.max(a,x.jumbo),0)+1}
+
+async function loadDay(){
+  if(!isApiReady()){stats();suggestJ();return}
+  try{today_=await run("getRecords",$("fD").value)}
+  catch(e){if(navigator.onLine)toast(errMsg(e))}
+  stats();suggestJ();
+}
+
+$("fR").oninput=drawChips;
+$("fA").oninput=drawChips;
+$("fGd").oninput=drawChips;
+$("fC").onchange=setName;
+$("fD").onchange=()=>{dateTouched=$("fD").value!==today();loadDay()};
+
+$("bSave").onclick=()=>{
+  if(!dateTouched&&$("fD").value!==today()){
+    applyToday(today());
+    toast("Tanggal diperbarui ke hari ini, cek No. Jumbo lalu simpan lagi");
+    return;
+  }
+  const j=parseInt($("fJ").value,10),net=parseFloat($("fN").value);
+  if(!(j>0)){toast("Isi No. Jumbo Bag");$("fJ").focus();return}
+  if(allToday().some(x=>x.jumbo===j)){toast("No. Jumbo "+j+" sudah tercatat pada tanggal ini");return}
+  const code=$("fC").value;
+  if(!code){toast("Pilih Code Item");return}
+  if(!$("fP").value){toast("Pilih No. Polisi");return}
+  if(!$("fDr").value){toast("Pilih Driver");return}
+  const arm=parseInt($("fA").value,10);if(!(arm>0)){toast("Isi Armada ke berapa");$("fA").focus();return}
+  const gd=$("fGd").value.trim();if(!gd){toast("Isi Tujuan Gudang");$("fGd").focus();return}
+  if(!(net>0)){toast("Isi Net Weight");$("fN").focus();return}
+  const g=$("fG").value===""?null:parseFloat($("fG").value);
+  if(g!==null&&g<net){toast("Gross lebih kecil dari Net");return}
+  if(!$("fPic").value){toast("Pilih PIC");return}
+
+  Q.push({
+    cid:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    date:$("fD").value,jumbo:j,plate:$("fP").value,driver:$("fDr").value,
+    code:code,name:$("fNm").value,armada:arm,gudang:gd,gross:g,net:net,
+    remark:$("fR").value.trim(),pic:$("fPic").value,err:""
+  });
+  saveQ();
+  LS.set("oka-code",code);LS.set("oka-plate",$("fP").value);LS.set("oka-driver",$("fDr").value);
+  LS.set("oka-pic",$("fPic").value);LS.set("oka-armada",String(arm));LS.set("oka-gudang",gd);
+  $("fN").value="";$("fG").value="";$("fR").value="";
+  drawChips();suggestJ();stats();drawQ();
+  if(navigator.onLine&&isApiReady()){toast("Menyimpan…");sync()}
+  else toast("Offline: tersimpan di HP, dikirim otomatis saat ada sinyal");
+};
+
+let syncing=false;
+async function sync(manual){
+  if(syncing||!Q.length||!isApiReady())return;
+  syncing=true;let ok=0,last="";
+  try{
+    for(const it of Q.slice()){
+      if(it.err&&!manual)continue;
+      it.err="";
+      try{
+        const r=await run("saveRecord",{
+          date:it.date,jumbo:it.jumbo,plate:it.plate,driver:it.driver,
+          code:it.code,name:it.name||"",armada:it.armada,gudang:it.gudang,
+          gross:it.gross,net:it.net,remark:it.remark,pic:it.pic
+        });
+        Q=Q.filter(x=>x!==it);saveQ();ok++;last=r.id;
+      }catch(e){
+        const m=errMsg(e);
+        if(PERM.test(m)){it.err=m;saveQ()}else{saveQ();break}
+      }
+    }
+  }finally{syncing=false}
+  drawQ();
+  if(ok){toast("Terkirim "+ok+" data"+(ok===1?" ("+last+")":""));await loadDay()}
+  else if(Q.some(x=>x.err)&&manual)toast("Ada data yang perlu diperbaiki");
+  else if(Q.length&&manual)toast("Belum ada koneksi, akan dicoba lagi otomatis");
+}
+
+function stt(){
+  $("stt").textContent=(navigator.onLine?"● Online":"○ Offline")+(Q.length?" · "+Q.length+" antrean":"");
+}
+function mkBtn(t,fn,cls){
+  const b=document.createElement("button");
+  b.className="sec "+(cls||"");b.style.cssText="padding:6px 10px;margin-top:6px;font-size:13px";
+  b.textContent=t;b.onclick=fn;return b;
+}
+function drawQ(){
+  stt();const box=$("qBox");box.innerHTML="";if(!Q.length)return;
+  const c=document.createElement("div");c.className="card q";
+  c.innerHTML="<div class='stat'><b>⏳ "+Q.length+" data belum terkirim</b></div>"+(LS.ok?"":"<div class='bad'>Penyimpanan HP tidak tersedia: jangan tutup aplikasi sebelum antrean terkirim.</div>");
+  Q.forEach(it=>{
+    const e=document.createElement("div");e.className="it";
+    e.innerHTML="<div><b>Jumbo "+it.jumbo+" · "+esc(it.plate)+"</b><small>"+esc(it.date)+" · "+esc(it.code)+" · "+fmt(it.net)+" kg</small>"+(it.err?"<small class='bad'>"+esc(it.err)+"</small>":"<small>menunggu koneksi…</small>")+"</div>";
+    const side=document.createElement("div");side.style.textAlign="right";
+    if(it.err){
+      const i=document.createElement("input");i.type="number";i.inputMode="numeric";i.value=it.jumbo;i.style.width="80px";
+      side.appendChild(i);side.appendChild(document.createElement("br"));
+      side.appendChild(mkBtn("Kirim ulang",()=>{
+        const n=parseInt(i.value,10);if(!(n>0)){toast("No. Jumbo tidak valid");return}
+        it.jumbo=n;it.err="";saveQ();sync(true);
+      }));
+      side.appendChild(document.createElement("br"));
+    }
+    let armed=false;
+    const del=mkBtn("Hapus",()=>{
+      if(!armed){armed=true;del.textContent="Yakin?";setTimeout(()=>{armed=false;del.textContent="Hapus"},3000);return}
+      Q=Q.filter(x=>x!==it);saveQ();drawQ();stats();suggestJ();
+    },"dg");
+    side.appendChild(del);e.appendChild(side);c.appendChild(e);
+  });
+  const sb=document.createElement("button");sb.className="pri sm";sb.textContent="Kirim sekarang";sb.onclick=()=>sync(true);
+  c.appendChild(sb);box.appendChild(c);
+}
+
+// =====================================================================
+// TAB REKAP
+// =====================================================================
+let rAll=false,rFirst=true;
+async function drawRk(){
+  const L=$("rL");L.innerHTML="<span style='color:var(--mu)'>Memuat…</span>";
+  try{
+    ALL=await run("getRecords","");
+    const cnt={};ALL.forEach(x=>{cnt[x.date]=(cnt[x.date]||0)+1});
+    const ds=Object.keys(cnt).sort().reverse().slice(0,10);
+    if(rFirst){rFirst=false;if(!cnt[$("rD").value]&&ds.length)$("rD").value=ds[0]}
+    const d=$("rD").value;
+    const rs=(rAll?ALL:ALL.filter(x=>x.date===d)).slice().sort((a,b)=>b.jumbo-a.jumbo);
+    const ch=$("rCh");ch.innerHTML="";
+    const mk=(t,on,fn)=>{const b=document.createElement("button");b.type="button";b.className="chip"+(on?" on":"");b.textContent=t;b.onclick=fn;ch.appendChild(b)};
+    mk("Semua ("+ALL.length+")",rAll,()=>{rAll=true;drawRk()});
+    ds.forEach(x=>mk(x.slice(8)+"/"+x.slice(5,7)+" ("+cnt[x]+")",!rAll&&x===d,()=>{rAll=false;$("rD").value=x;drawRk()}));
+    $("rKg").textContent=fmt(rs.reduce((a,x)=>a+x.net,0))+" kg · "+rs.length+" jumbo";
+    const g={};rs.forEach(r=>{const k=r.plate+"|"+r.code;g[k]=g[k]||{plate:r.plate,code:r.code,n:0,kg:0};g[k].n++;g[k].kg+=r.net});
+    const t=$("rT");t.innerHTML="<tr><th>Plat</th><th>Kode</th><th>Jumbo</th><th>Net (kg)</th></tr>";
+    Object.values(g).sort((a,b)=>a.plate.localeCompare(b.plate)||a.code.localeCompare(b.code))
+      .forEach(x=>t.insertAdjacentHTML("beforeend","<tr><td>"+esc(x.plate)+"</td><td>"+esc(x.code)+"</td><td>"+x.n+"</td><td>"+fmt(x.kg)+"</td></tr>"));
+    L.innerHTML="";
+    if(!rs.length){L.innerHTML="<span style='color:var(--mu)'>"+(ALL.length?"Belum ada data pada tanggal ini.":"Spreadsheet belum berisi data penimbangan.")+"</span>";return}
+    rs.forEach(r=>{
+      const e=document.createElement("div");e.className="it";
+      e.innerHTML="<div><b>Jumbo "+r.jumbo+" · "+esc(r.id)+"</b><small>"+esc(r.date)+(r.input?" · input "+esc(r.input.slice(5)):"")+" · "+esc(r.plate)+" · "+esc(r.driver)+"</small><small>"+esc(r.code)+(r.name?" ("+esc(r.name)+")":"")+" · Remark "+esc(r.remark||"-")+(r.armada?" · Armada "+esc(r.armada):"")+(r.gudang?" · "+esc(r.gudang):"")+" · "+esc(r.pic)+"</small></div><div style='text-align:right'><div class='w'>"+fmt(r.net)+" kg</div><button class='sec dg' style='margin-top:6px;padding:6px 10px;font-size:13px'>Hapus</button></div>";
+      const bt=e.querySelector("button");let armed=false;
+      bt.onclick=async()=>{
+        if(!armed){armed=true;bt.textContent="Yakin?";setTimeout(()=>{armed=false;bt.textContent="Hapus"},3000);return}
+        try{await run("deleteRecord",r.key);toast("Dihapus");drawRk();loadDay()}catch(x){toast(errMsg(x))}
+      };
+      L.appendChild(e);
+    });
+  }catch(e){L.textContent=navigator.onLine?"Gagal memuat rekap: "+errMsg(e):"Rekap membutuhkan koneksi internet."}
+}
+$("rD").onchange=()=>{rAll=false;drawRk()};
+$("bRef").onclick=drawRk;
+
+// =====================================================================
+// TAB LAPORAN (COMPILE PER MOBIL + TANDA TANGAN DIGITAL + EXPORT PDF)
+// =====================================================================
+let lAll=false,lFirst=true;
+function carKey(r){return r.date+"|"+r.plate+"|"+(r.armada||"1")}
+function docNo(c){
+  const dt=c.date.replace(/-/g,"");
+  const pl=c.plate.replace(/\s+/g,"");
+  return "BA-OKA-"+dt+"-"+pl+"-A"+(c.armada||"1");
+}
+function sigStatus(cp){
+  const a=!!(cp&&cp.okaSig),b=!!(cp&&cp.clientSig);
+  if(a&&b)return {txt:"Lengkap · Siap PDF",cls:"ok"};
+  if(a||b)return {txt:"1/2 TTD",cls:"part"};
+  return {txt:"Belum TTD",cls:""};
+}
+
+async function drawLp(){
+  $("lpDetail").classList.add("hide");
+  $("lpListWrap").classList.remove("hide");
+  const box=$("lpCards");
+  box.innerHTML="<div class='card' style='color:var(--mu)'>Memuat laporan…</div>";
+  try{
+    const [recs,comps]=await Promise.all([
+      run("getRecords",""),
+      run("getCompiles").catch(()=>({}))
+    ]);
+    ALL=recs||[];
+    COMPILES=comps||{};
+    const cnt={};ALL.forEach(x=>{cnt[x.date]=(cnt[x.date]||0)+1});
+    const ds=Object.keys(cnt).sort().reverse().slice(0,10);
+    if(lFirst){lFirst=false;if(!cnt[$("lD").value]&&ds.length)$("lD").value=ds[0]}
+    const d=$("lD").value;
+    const ch=$("lCh");ch.innerHTML="";
+    const mk=(t,on,fn)=>{const b=document.createElement("button");b.type="button";b.className="chip"+(on?" on":"");b.textContent=t;b.onclick=fn;ch.appendChild(b)};
+    mk("Semua",lAll,()=>{lAll=true;drawLp()});
+    ds.forEach(x=>mk(x.slice(8)+"/"+x.slice(5,7),!lAll&&x===d,()=>{lAll=false;$("lD").value=x;drawLp()}));
+
+    const rs=lAll?ALL:ALL.filter(x=>x.date===d);
+    const map={};
+    rs.forEach(r=>{
+      const k=carKey(r);
+      if(!map[k])map[k]={key:k,date:r.date,plate:r.plate,armada:r.armada||"1",driver:r.driver,gudang:r.gudang,pic:r.pic,rows:[]};
+      map[k].rows.push(r);
+    });
+    const cars=Object.values(map).sort((a,b)=>b.date.localeCompare(a.date)||a.plate.localeCompare(b.plate)||Number(a.armada)-Number(b.armada));
+    box.innerHTML="";
+    if(!cars.length){
+      box.innerHTML="<div class='card' style='color:var(--mu)'>Belum ada data mobil pada tanggal ini.</div>";
+      return;
+    }
+    cars.forEach(c=>{
+      c.rows.sort((a,b)=>a.jumbo-b.jumbo);
+      const net=c.rows.reduce((a,x)=>a+x.net,0);
+      const gross=c.rows.reduce((a,x)=>a+(x.gross||0),0);
+      const cp=COMPILES[c.key]||{};
+      const st=sigStatus(cp);
+      const el=document.createElement("div");el.className="card car-card";
+      el.innerHTML=`
+        <div class="car-top">
+          <div>
+            <b style="font-size:16px">${esc(c.plate)} · Armada ${esc(c.armada)}</b>
+            <div class="car-meta">${esc(c.date)} · ${esc(c.driver)} · ${esc(c.gudang||"-")}</div>
+            <div class="car-meta">${esc(docNo(c))}</div>
+          </div>
+          <span class="badge ${st.cls}">${st.txt}</span>
+        </div>
+        <div class="car-sum">
+          <span><b>${c.rows.length}</b> Jumbo Bag</span>
+          <span>Net <b>${fmt(net)} kg</b>${gross?` · Gross ${fmt(gross)} kg`:""}</span>
+        </div>`;
+      el.onclick=()=>openCar(c);
+      box.appendChild(el);
+    });
+  }catch(e){
+    box.innerHTML="<div class='card bad'>"+esc(errMsg(e))+"</div>";
+  }
+}
+
+let tempSig={oka:"",okaAt:"",cli:"",cliAt:""};
+function openCar(c){
+  curCar=c;
+  const cp=COMPILES[c.key]||{};
+  tempSig={oka:cp.okaSig||"",okaAt:cp.okaAt||"",cli:cp.clientSig||"",cliAt:cp.clientAt||""};
+  $("lpListWrap").classList.add("hide");
+  $("lpDetail").classList.remove("hide");
+  $("dTitle").textContent=c.plate+" · Armada "+c.armada;
+  $("dDoc").textContent="No. Dokumen: "+docNo(c);
+  $("dMeta").textContent=c.date+" · Driver: "+c.driver+" · Tujuan: "+(c.gudang||"-");
+  const st=sigStatus(cp);
+  $("dBadge").className="badge "+st.cls;
+  $("dBadge").textContent=st.txt;
+
+  // Ringkasan per item
+  const byIt={};
+  c.rows.forEach(r=>{
+    const k=r.code+"|"+(r.name||"");
+    if(!byIt[k])byIt[k]={code:r.code,name:r.name||"",n:0,gross:0,net:0};
+    byIt[k].n++;byIt[k].gross+=(r.gross||0);byIt[k].net+=r.net;
+  });
+  let sumHtml="<tr><th>Code</th><th>Name Item</th><th>Jumbo</th><th>Gross (kg)</th><th>Net (kg)</th></tr>";
+  let tN=0,tG=0,tNet=0;
+  Object.values(byIt).forEach(x=>{
+    tN+=x.n;tG+=x.gross;tNet+=x.net;
+    sumHtml+=`<tr><td>${esc(x.code)}</td><td>${esc(x.name||"-")}</td><td>${x.n}</td><td>${x.gross?fmt(x.gross):"-"}</td><td><b>${fmt(x.net)}</b></td></tr>`;
+  });
+  sumHtml+=`<tr style="background:var(--soft);font-weight:700"><td colspan="2">TOTAL</td><td>${tN}</td><td>${tG?fmt(tG):"-"}</td><td>${fmt(tNet)}</td></tr>`;
+  $("dSumT").innerHTML=sumHtml;
+
+  // Rincian per jumbo
+  let detHtml="<tr><th>No</th><th>ID</th><th>Jumbo</th><th>Code</th><th>Gross</th><th>Net (kg)</th><th>Remark</th></tr>";
+  c.rows.forEach((r,i)=>{
+    detHtml+=`<tr><td>${i+1}</td><td>${esc(r.id)}</td><td>${r.jumbo}</td><td>${esc(r.code)}</td><td>${r.gross?fmt(r.gross):"-"}</td><td><b>${fmt(r.net)}</b></td><td>${esc(r.remark||"-")}</td></tr>`;
+  });
+  $("dDetT").innerHTML=detHtml;
+
+  $("lpNote").value=cp.note||"";
+  $("sOkaNm").value=cp.okaName||c.pic||"";
+  $("sCliNm").value=cp.clientName||"";
+  $("sCliCo").value=cp.clientCompany||"";
+  renderSigPrev();
+}
+
+function renderSigPrev(){
+  $("pOka").innerHTML=tempSig.oka?`<img src="${tempSig.oka}" alt="TTD OKA">`:"<span>Belum ditandatangani</span>";
+  $("tOka").textContent=tempSig.okaAt?("Ditandatangani: "+tempSig.okaAt):"";
+  $("pCli").innerHTML=tempSig.cli?`<img src="${tempSig.cli}" alt="TTD Client">`:"<span>Belum ditandatangani</span>";
+  $("tCli").textContent=tempSig.cliAt?("Ditandatangani: "+tempSig.cliAt):"";
+  const st=sigStatus({okaSig:tempSig.oka,clientSig:tempSig.cli});
+  $("dBadge").className="badge "+st.cls;
+  $("dBadge").textContent=st.txt;
+}
+
+$("lpBack").onclick=()=>{$("lpDetail").classList.add("hide");$("lpListWrap").classList.remove("hide")};
+$("lD").onchange=()=>{lAll=false;drawLp()};
+$("lRef").onclick=drawLp;
+
+// Signature Pad Modal
+let sigTarget=null,drawing=false,hasStroke=false;
+const canvas=$("sigCanvas"),ctx=canvas.getContext("2d");
+
+function initCanvas(){
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const w=canvas.clientWidth||360,h=canvas.clientHeight||200;
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle="#ffffff";ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle="#111111";ctx.lineWidth=2.4;ctx.lineCap="round";ctx.lineJoin="round";
+  hasStroke=false;
+}
+function openSig(who){
+  sigTarget=who;
+  $("sigTitle").textContent=who==="oka"?"Tanda Tangan PIC OKA":"Tanda Tangan PIC Client";
+  $("sigModal").classList.remove("hide");
+  requestAnimationFrame(initCanvas);
+}
+function pt(e){
+  const r=canvas.getBoundingClientRect();
+  const t=e.touches?e.touches[0]:e;
+  return {x:t.clientX-r.left,y:t.clientY-r.top};
+}
+canvas.addEventListener("pointerdown",e=>{
+  drawing=true;hasStroke=true;canvas.setPointerCapture(e.pointerId);
+  const p=pt(e);ctx.beginPath();ctx.moveTo(p.x,p.y);
+});
+canvas.addEventListener("pointermove",e=>{
+  if(!drawing)return;
+  const p=pt(e);ctx.lineTo(p.x,p.y);ctx.stroke();
+});
+const stopDraw=()=>{drawing=false};
+canvas.addEventListener("pointerup",stopDraw);
+canvas.addEventListener("pointercancel",stopDraw);
+
+$("bSigOka").onclick=()=>openSig("oka");
+$("bSigCli").onclick=()=>openSig("cli");
+$("sigClose").onclick=()=>$("sigModal").classList.add("hide");
+$("sigClear").onclick=initCanvas;
+$("sigApply").onclick=()=>{
+  if(!hasStroke){toast("Goreskan tanda tangan dulu");return}
+  // Kompresi ukuran gambar agar aman disimpan di Google Sheets (< 50.000 karakter)
+  const tmp=document.createElement("canvas");
+  tmp.width=360;tmp.height=160;
+  const tctx=tmp.getContext("2d");
+  tctx.fillStyle="#ffffff";tctx.fillRect(0,0,360,160);
+  tctx.drawImage(canvas,0,0,360,160);
+  const dataUrl=tmp.toDataURL("image/png");
+  if(sigTarget==="oka"){tempSig.oka=dataUrl;tempSig.okaAt=nowWib()}
+  else{tempSig.cli=dataUrl;tempSig.cliAt=nowWib()}
+  renderSigPrev();
+  $("sigModal").classList.add("hide");
+};
+
+$("bSaveLp").onclick=async()=>{
+  if(!curCar)return;
+  const bt=$("bSaveLp");bt.disabled=true;
+  const payload={
+    key:curCar.key,docNo:docNo(curCar),date:curCar.date,plate:curCar.plate,armada:curCar.armada,
+    note:$("lpNote").value.trim(),
+    okaName:$("sOkaNm").value.trim(),okaSig:tempSig.oka,okaAt:tempSig.okaAt,
+    clientName:$("sCliNm").value.trim(),clientCompany:$("sCliCo").value.trim(),
+    clientSig:tempSig.cli,clientAt:tempSig.cliAt
+  };
+  try{
+    await run("saveCompile",payload);
+    COMPILES[curCar.key]=payload;
+    toast("Tanda tangan & catatan tersimpan");
+  }catch(e){toast(errMsg(e))}
+  bt.disabled=false;
+};
+
+// Export PDF (Kop surat: logo kiri, alamat kanan rata kiri, tanpa garis hijau, teks kop hitam; tabel hijau)
+$("bPdf").onclick=()=>{
+  if(!curCar)return;
+  if(!window.jspdf||!window.jspdf.jsPDF){toast("Library PDF belum siap, gunakan tombol Cetak/Print");return}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  const prof=getProf();
+  const c=curCar;
+  const dNo=docNo(c);
+
+  // 1. Kop Surat (Logo kiri, Alamat kanan rata kiri, tanpa garis hijau, teks hitam)
+  let topY=12;
+  if(prof.logo){
+    try{
+      const fmtImg=prof.logo.indexOf("image/jpeg")>=0?"JPEG":"PNG";
+      doc.addImage(prof.logo,fmtImg,14,topY,30,22,undefined,"FAST");
+    }catch(e){}
+  }
+  const addrX=132;
+  doc.setTextColor(0,0,0);
+  doc.setFont("helvetica","bold");doc.setFontSize(10.5);
+  doc.text(prof.name||"PT. ORBIT KARUNIA ABADI",addrX,topY+4);
+  doc.setFont("helvetica","normal");doc.setFontSize(9.2);
+  let ay=topY+9;
+  String(prof.address||"").split(/\r?\n/).filter(Boolean).forEach(line=>{
+    doc.text(line.trim(),addrX,ay);ay+=4.3;
+  });
+  if(prof.contact){doc.text(prof.contact.trim(),addrX,ay);ay+=4.3}
+
+  // 2. Judul Dokumen (hitam)
+  let y=Math.max(topY+27,ay+5);
+  doc.setFont("helvetica","bold");doc.setFontSize(14);doc.setTextColor(0,0,0);
+  doc.text("GOODS RECEIPT FORM",105,y,{align:"center"});
+  doc.setFont("helvetica","normal");doc.setFontSize(9.5);
+  doc.text("No. Dokumen: "+dNo,105,y+5.5,{align:"center"});
+  y+=12;
+
+  // 3. Info Armada
+  doc.setFontSize(9.5);
+  const leftInfo=[
+    ["Tanggal",": "+c.date],
+    ["No. Polisi",": "+c.plate],
+    ["Armada Ke",": "+c.armada]
+  ];
+  const rightInfo=[
+    ["Driver",": "+(c.driver||"-")],
+    ["Tujuan Gudang",": "+(c.gudang||"-")],
+    ["PIC OKA",": "+($("sOkaNm").value.trim()||c.pic||"-")]
+  ];
+  leftInfo.forEach((r,i)=>{
+    doc.setFont("helvetica","bold");doc.text(r[0],14,y+i*5.2);
+    doc.setFont("helvetica","normal");doc.text(r[1],38,y+i*5.2);
+  });
+  rightInfo.forEach((r,i)=>{
+    doc.setFont("helvetica","bold");doc.text(r[0],112,y+i*5.2);
+    doc.setFont("helvetica","normal");doc.text(r[1],140,y+i*5.2);
+  });
+  y+=19;
+
+  // 4. Tabel Ringkasan per Item (warna hijau seperti semula)
+  const byIt={};
+  c.rows.forEach(r=>{
+    const k=r.code+"|"+(r.name||"");
+    if(!byIt[k])byIt[k]={code:r.code,name:r.name||"-",n:0,gross:0,net:0};
+    byIt[k].n++;byIt[k].gross+=(r.gross||0);byIt[k].net+=r.net;
+  });
+  let tN=0,tG=0,tNet=0;
+  const sumBody=Object.values(byIt).map(x=>{
+    tN+=x.n;tG+=x.gross;tNet+=x.net;
+    return [x.code,x.name,String(x.n),x.gross?fmt(x.gross):"-",fmt(x.net)];
+  });
+  sumBody.push([{content:"TOTAL",colSpan:2,styles:{fontStyle:"bold"}},{content:String(tN),styles:{fontStyle:"bold"}},{content:tG?fmt(tG):"-",styles:{fontStyle:"bold"}},{content:fmt(tNet),styles:{fontStyle:"bold"}}]);
+
+  doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("Ringkasan per Item",14,y);
+  doc.autoTable({
+    startY:y+2.5,
+    head:[["Code Item","Name Item","Jumbo","Gross (Kg)","Net (Kg)"]],
+    body:sumBody,
+    theme:"grid",
+    headStyles:{fillColor:[15,122,79],textColor:[255,255,255],fontStyle:"bold"},
+    styles:{fontSize:9,textColor:[0,0,0],cellPadding:2.6},
+    didParseCell:(d)=>{if(d.section==="body"&&d.row.index===sumBody.length-1)d.cell.styles.fillColor=[230,239,233]}
+  });
+
+  // 5. Tabel Rincian Jumbo Bag
+  let y2=doc.lastAutoTable.finalY+7;
+  doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text("Rincian Penimbangan per Jumbo Bag",14,y2);
+  const detBody=c.rows.map((r,i)=>[String(i+1),r.id,String(r.jumbo),r.code,r.name||"-",r.gross?fmt(r.gross):"-",fmt(r.net),r.remark||"-"]);
+  doc.autoTable({
+    startY:y2+2.5,
+    head:[["No","ID","Jumbo","Code","Name Item","Gross","Net (Kg)","Remark"]],
+    body:detBody,
+    theme:"grid",
+    headStyles:{fillColor:[15,122,79],textColor:[255,255,255],fontStyle:"bold"},
+    styles:{fontSize:8.3,textColor:[0,0,0],cellPadding:2.2}
+  });
+
+  let y3=doc.lastAutoTable.finalY+6;
+  const note=$("lpNote").value.trim();
+  if(note){
+    doc.setFont("helvetica","bold");doc.setFontSize(9);doc.text("Catatan:",14,y3);
+    doc.setFont("helvetica","normal");
+    const lines=doc.splitTextToSize(note,182);
+    doc.text(lines,14,y3+4.5);
+    y3+=lines.length*4.2+7;
+  }
+
+  // 6. Blok Tanda Tangan
+  if(y3>232){doc.addPage();y3=20}
+  const okaNm=$("sOkaNm").value.trim()||c.pic||"( ...................... )";
+  const cliNm=$("sCliNm").value.trim()||"( ...................... )";
+  const cliCo=$("sCliCo").value.trim();
+
+  doc.setTextColor(0,0,0);doc.setFont("helvetica","bold");doc.setFontSize(9.5);
+  doc.text("PIC OKA",54,y3,{align:"center"});
+  doc.text("PIC Client"+(cliCo?" ("+cliCo+")":""),156,y3,{align:"center"});
+
+  if(tempSig.oka){try{doc.addImage(tempSig.oka,"PNG",32,y3+3,44,20)}catch(e){}}
+  if(tempSig.cli){try{doc.addImage(tempSig.cli,"PNG",134,y3+3,44,20)}catch(e){}}
+
+  doc.setDrawColor(0,0,0);
+  doc.line(26,y3+25,82,y3+25);
+  doc.line(128,y3+25,184,y3+25);
+  doc.setFont("helvetica","bold");doc.setFontSize(9.5);
+  doc.text(okaNm,54,y3+30,{align:"center"});
+  doc.text(cliNm,156,y3+30,{align:"center"});
+  doc.setFont("helvetica","normal");doc.setFontSize(7.8);
+  if(tempSig.okaAt)doc.text(tempSig.okaAt,54,y3+34.5,{align:"center"});
+  if(tempSig.cliAt)doc.text(tempSig.cliAt,156,y3+34.5,{align:"center"});
+
+  doc.save(dNo+".pdf");
+  toast("PDF berhasil diunduh");
+};
+
+// Fallback Print HTML
+$("bPrint").onclick=()=>{
+  if(!curCar)return;
+  const prof=getProf(),c=curCar,dNo=docNo(c);
+  const byIt={};
+  c.rows.forEach(r=>{
+    const k=r.code+"|"+(r.name||"");
+    if(!byIt[k])byIt[k]={code:r.code,name:r.name||"-",n:0,gross:0,net:0};
+    byIt[k].n++;byIt[k].gross+=(r.gross||0);byIt[k].net+=r.net;
+  });
+  let tN=0,tG=0,tNet=0,sumRows="";
+  Object.values(byIt).forEach(x=>{
+    tN+=x.n;tG+=x.gross;tNet+=x.net;
+    sumRows+=`<tr><td>${esc(x.code)}</td><td>${esc(x.name)}</td><td>${x.n}</td><td>${x.gross?fmt(x.gross):"-"}</td><td><b>${fmt(x.net)}</b></td></tr>`;
+  });
+  sumRows+=`<tr class="tot"><td colspan="2">TOTAL</td><td>${tN}</td><td>${tG?fmt(tG):"-"}</td><td>${fmt(tNet)}</td></tr>`;
+  const detRows=c.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.id)}</td><td>${r.jumbo}</td><td>${esc(r.code)}</td><td>${esc(r.name||"-")}</td><td>${r.gross?fmt(r.gross):"-"}</td><td><b>${fmt(r.net)}</b></td><td>${esc(r.remark||"-")}</td></tr>`).join("");
+  const addrHtml=String(prof.address||"").split(/\r?\n/).filter(Boolean).map(esc).join("<br>");
+  const note=$("lpNote").value.trim();
+
+  $("printArea").innerHTML=`
+    <div class="p-kop">
+      <div>${prof.logo?`<img src="${prof.logo}" alt="Logo">`:""}</div>
+      <div class="p-addr"><b>${esc(prof.name)}</b>${addrHtml}${prof.contact?"<br>"+esc(prof.contact):""}</div>
+    </div>
+    <div class="p-title"><h2>GOODS RECEIPT FORM</h2><div>No. Dokumen: ${esc(dNo)}</div></div>
+    <table class="p-meta">
+      <tr><td><b>Tanggal</b>: ${esc(c.date)}</td><td><b>Driver</b>: ${esc(c.driver||"-")}</td></tr>
+      <tr><td><b>No. Polisi</b>: ${esc(c.plate)}</td><td><b>Tujuan Gudang</b>: ${esc(c.gudang||"-")}</td></tr>
+      <tr><td><b>Armada Ke</b>: ${esc(c.armada)}</td><td><b>PIC OKA</b>: ${esc($("sOkaNm").value.trim()||c.pic||"-")}</td></tr>
+    </table>
+    <b style="display:block;margin-bottom:4px">Ringkasan per Item</b>
+    <table class="p-tbl"><tr><th>Code Item</th><th>Name Item</th><th>Jumbo</th><th>Gross (Kg)</th><th>Net (Kg)</th></tr>${sumRows}</table>
+    <b style="display:block;margin-bottom:4px">Rincian Penimbangan per Jumbo Bag</b>
+    <table class="p-tbl"><tr><th>No</th><th>ID</th><th>Jumbo</th><th>Code</th><th>Name Item</th><th>Gross</th><th>Net (Kg)</th><th>Remark</th></tr>${detRows}</table>
+    ${note?`<div style="margin-top:8px"><b>Catatan:</b> ${esc(note)}</div>`:""}
+    <div class="p-sigs">
+      <div class="p-sig">
+        <b>PIC OKA</b>
+        <div class="p-sig-img">${tempSig.oka?`<img src="${tempSig.oka}">`:""}</div>
+        <div class="p-line"></div>
+        <b>${esc($("sOkaNm").value.trim()||c.pic||"( ...................... )")}</b>
+        <div style="font-size:10px">${esc(tempSig.okaAt||"")}</div>
+      </div>
+      <div class="p-sig">
+        <b>PIC Client${$("sCliCo").value.trim()?" ("+esc($("sCliCo").value.trim())+")":""}</b>
+        <div class="p-sig-img">${tempSig.cli?`<img src="${tempSig.cli}">`:""}</div>
+        <div class="p-line"></div>
+        <b>${esc($("sCliNm").value.trim()||"( ...................... )")}</b>
+        <div style="font-size:10px">${esc(tempSig.cliAt||"")}</div>
+      </div>
+    </div>`;
+  window.print();
+};
+
+// =====================================================================
+// TAB MASTER: LOGO, KOP SURAT & URL API
+// =====================================================================
+let pendingLogo=null;
+$("fLogoFile").onchange=e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=320,scale=Math.min(1,maxW/Math.max(img.width,img.height));
+      const cv=document.createElement("canvas");
+      cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      pendingLogo=cv.toDataURL("image/png");
+      $("msLogoPrev").innerHTML=`<img src="${pendingLogo}" alt="Preview Logo">`;
+      toast("Logo siap disimpan");
+    };
+    img.src=rd.result;
+  };
+  rd.readAsDataURL(f);
+};
+
+$("bSaveProf").onclick=async()=>{
+  const bt=$("bSaveProf");bt.disabled=true;
+  const prof={
+    name:$("pName").value.trim()||DEFAULT_PROFILE.name,
+    address:$("pAddr").value.trim()||DEFAULT_PROFILE.address,
+    contact:$("pWeb").value.trim(),
+    logo:pendingLogo!==null?pendingLogo:(getProf().logo||"")
+  };
+  try{
+    M=await run("saveProfile",prof);
+    LS.set("oka-master",JSON.stringify(M));
+    pendingLogo=null;
+    renderLogo();
+    toast("Logo & kop surat tersimpan");
+  }catch(e){toast(errMsg(e))}
+  bt.disabled=false;
+};
+
+$("bSaveApi").onclick=()=>{
+  const u=$("fApiUrl").value.trim();
+  LS.set("oka-api-url",u);
+  drawAll();
+  if(isApiReady()){toast("URL API disimpan, memuat data…");refreshMaster(true);loadDay()}
+  else toast("Format URL harus https://script.google.com/macros/s/.../exec");
+};
+
+// =====================================================================
+// NAVIGASI & INISIALISASI PWA
+// =====================================================================
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  ["in","rk","lp","ms"].forEach(v=>$("v-"+v).classList.toggle("hide",v!==b.dataset.v));
+  if(b.dataset.v==="rk")drawRk();
+  if(b.dataset.v==="lp")drawLp();
+  if(b.dataset.v==="in")refreshMaster();
+});
+
+$("fD").value=$("rD").value=$("lD").value=today();
+try{
+  const c=JSON.parse(LS.get("oka-master")||"null");
+  if(c&&c.plates&&c.items&&c.armadas){M=Object.assign({profile:DEFAULT_PROFILE},c)}
+}catch(e){}
+drawAll();drawQ();stats();
+
+if(isApiReady()){
+  run("getMaster").then(m=>{
+    M=Object.assign({profile:DEFAULT_PROFILE},m);
+    LS.set("oka-master",JSON.stringify(M));
+    applyToday(m.today);drawAll();loadDay().then(()=>sync());
+  }).catch(()=>{toast("Mode offline: memakai daftar tersimpan");stt()});
+}else{stt()}
+
+window.addEventListener("online",()=>{stt();sync();refreshMaster()});
+window.addEventListener("offline",stt);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){refreshMaster();applyToday(today())}});
+window.addEventListener("focus",()=>applyToday(today()));
+window.addEventListener("pageshow",()=>applyToday(today()));
+setInterval(refreshMaster,180000);
+setInterval(()=>applyToday(today()),60000);
+setInterval(()=>{if(Q.some(x=>!x.err))sync()},20000);
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
